@@ -3,8 +3,6 @@ const router = express.Router();
 const { authorize } = require('../modules/auth')
 const {google} = require('googleapis');
 
-
-
 //READ FILE LIST
 router.get('/list', (req, res) => {
     async function readDrive(auth) {

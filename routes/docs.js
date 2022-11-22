@@ -1,6 +1,5 @@
-var express = require('express');
-var router = express.Router();
-
+const express = require('express');
+const router = express.Router();
 
 const fs = require('fs').promises;
 const path = require('path');
@@ -11,7 +10,6 @@ const {google} = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/documents','https://www.googleapis.com/auth/drive',];
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
-
 
 async function loadSavedCredentialsIfExist() {
   try {
@@ -79,7 +77,6 @@ router.post('/createFolder', function(req, res, next) {
     authorize().then(createFolder).catch(console.error);
 });
 
-
 // COPY MODEL WITH req.body.documentId: 'id du document a copier' / req.body.name: 'nouveau nom du fichier' / req.body.inFolder: 'dossier parent'
 router.post('/copyModel', (req, res) => {
     async function copyModel(auth) {
@@ -103,7 +100,6 @@ router.post('/copyModel', (req, res) => {
     }
     authorize().then(copyModel).catch(console.error)
 })
-
 
 //Replace words req.body.documentId : id du doc; 
 router.post('/replaceWords', (req, res) => {

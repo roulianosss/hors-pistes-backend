@@ -1,57 +1,32 @@
 const express = require('express');
 const router = express.Router();
-
-const fs = require('fs').promises;
-const path = require('path');
-const process = require('process');
-const {authenticate} = require('@google-cloud/local-auth');
+const { authorize } = require('../modules/auth')
 const {google} = require('googleapis');
 
-const SCOPES = ['https://www.googleapis.com/auth/documents','https://www.googleapis.com/auth/drive',];
-const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
-
-async function loadSavedCredentialsIfExist() {
-  try {
-    const content = await fs.readFile(TOKEN_PATH);
-    const credentials = JSON.parse(content);
-    return google.auth.fromJSON(credentials);
-  } catch (err) {
-    return null;
-  }
-}
-
-async function saveCredentials(client) {
-  const content = await fs.readFile(CREDENTIALS_PATH);
-  const keys = JSON.parse(content);
-  const key = keys.installed || keys.web;
-  const payload = JSON.stringify({
-    type: 'authorized_user',
-    client_id: key.client_id,
-    client_secret: key.client_secret,
-    refresh_token: client.credentials.refresh_token,
-  });
-  await fs.writeFile(TOKEN_PATH, payload);
-}
-
-async function authorize() {
-  let client = await loadSavedCredentialsIfExist();
-  if (client) {
-    return client;
-  }
-  client = await authenticate({
-    scopes: SCOPES,
-    keyfilePath: CREDENTIALS_PATH,
-  });
-  if (client.credentials) {
-    await saveCredentials(client);
-  }
-  return client;
-}
-
-
-
-
+//READ FILE LIST
+router.get('/list', (req, res) => {
+    async function readDrive(auth) {
+        const service = google.drive({version: 'v3', auth});
+        const files = [];
+        try {
+            const response = await service.files.list({
+            // q: '',
+            fields: 'nextPageToken, files(id, name)',
+            parents: ['1wZ9smE3a-J6Ns4-sOFL0FspmaPaa0AVf']
+            });
+            Array.prototype.push.apply(files, response.files);
+            response.data.files.forEach(function(file) {
+            console.log('Found file:', file.name, file.id);
+            });
+            res.json(response.data.files)
+            return response.data.files;
+        } catch (err) {
+            // TODO(developer) - Handle error
+            throw err;
+        }   
+    }
+    authorize().then(readDrive).catch(console.error);
+})
 
 // CREATE FOLDER WITH req.body.name: 'nom du dossier'; req.body.inFolder: 'nom du dossier parent'
 router.post('/createFolder', function(req, res, next) {
@@ -67,8 +42,6 @@ router.post('/createFolder', function(req, res, next) {
             resource: fileMetadata,
             fields: 'id',
           });
-          
-          console.log('Folder Id:', file.data.id);
           res.json(file)
         } catch (err) {
           throw err;
@@ -80,8 +53,7 @@ router.post('/createFolder', function(req, res, next) {
 // COPY MODEL WITH req.body.documentId: 'id du document a copier' / req.body.name: 'nouveau nom du fichier' / req.body.inFolder: 'dossier parent'
 router.post('/copyModel', (req, res) => {
     async function copyModel(auth) {
-        const drive = google.drive({ version: "v3", auth }); // Please use `auth` of your script.
-      
+        const drive = google.drive({ version: "v3", auth });
         drive.files.copy(
           {
             fileId: req.body.documentId,

@@ -6,7 +6,8 @@ const {google} = require('googleapis');
 require('dotenv').config()
 
 const SCOPES = ['https://www.googleapis.com/auth/documents','https://www.googleapis.com/auth/drive',];
-
+const TOKEN_PATH = path.join(process.cwd(), 'token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 
 const creds = process.env.CREDS
@@ -27,7 +28,7 @@ async function loadSavedCredentialsIfExist() {
 
 async function saveCredentials(client) {
   const content = await fs.readFile(CREDENTIALS_PATH);
-  const keys = JSON.parse(creds);
+  const keys = JSON.parse(content);
   const key = keys.installed || keys.web;
   const payload = JSON.stringify({
     type: 'authorized_user',

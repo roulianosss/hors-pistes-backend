@@ -3,16 +3,23 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
+require('dotenv').config()
 
 const SCOPES = ['https://www.googleapis.com/auth/documents','https://www.googleapis.com/auth/drive',];
 const TOKEN_PATH = path.join(process.cwd(), 'token.json');
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 
+const creds = process.env.CREDS
+
+
+
+
+
+
 async function loadSavedCredentialsIfExist() {
   try {
-    const content = await fs.readFile(TOKEN_PATH);
-    const credentials = JSON.parse(content);
+    const credentials = JSON.parse(creds);
     return google.auth.fromJSON(credentials);
   } catch (err) {
     return null;

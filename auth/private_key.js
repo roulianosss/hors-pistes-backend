@@ -1,0 +1,1 @@
+module.exports = 'CUSTOM_PIVATE_KEY'

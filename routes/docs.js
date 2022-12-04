@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { authorize } = require('../modules/auth')
-const {google} = require('googleapis');
+const { authorize } = require('../modules/auth-google-api.js')
+const { google } = require('googleapis');
 
 //READ FILE LIST
 router.get('/list', (req, res) => {
@@ -11,7 +11,7 @@ router.get('/list', (req, res) => {
         try {
             const response = await service.files.list({
             // q: '',
-            fields: 'nextPageToken, files(id, name)',
+            // fields: 'nextPageToken, files(id, name)',
             parents: ['1wZ9smE3a-J6Ns4-sOFL0FspmaPaa0AVf']
             });
             Array.prototype.push.apply(files, response.files);
@@ -19,7 +19,7 @@ router.get('/list', (req, res) => {
             console.log('Found file:', file.name, file.id);
             });
             res.json(response.data.files)
-            return response.data.files;
+            // return response.data.files;
         } catch (err) {
             // TODO(developer) - Handle error
             throw err;

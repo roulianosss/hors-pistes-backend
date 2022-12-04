@@ -28,7 +28,6 @@ router.post("/signup", async (req, res) => {
     const { name, password, email, surname, birth } = req.body;
     const response = await User.findOne({ email: email });
     if (response === null) {
-      console.log('check')
       const hash = bcrypt.hashSync(password, 10)
       const newUser = await new User({
         email,

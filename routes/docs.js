@@ -4,6 +4,7 @@ const { authorize } = require('../modules/auth-google-api.js')
 const { google } = require('googleapis');
 
 
+
 //READ FILE LIST
 router.get('/list', (req, res) => {
     async function readDrive(auth) {
@@ -15,9 +16,9 @@ router.get('/list', (req, res) => {
             // fields: 'nextPageToken, files(id, name)',
             parents: ['1wZ9smE3a-J6Ns4-sOFL0FspmaPaa0AVf']
             });
-            Array.prototype.push.apply(files, response.files);
+            Array.prototype.push.apply(files, response.files)
             response.data.files.forEach(function(file) {
-            console.log('Found file:', file.name, file.id);
+            console.log('Found file:', file.name, file.id)
             });
             res.json(response.data.files)
             // return response.data.files;

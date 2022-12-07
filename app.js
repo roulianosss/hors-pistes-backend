@@ -8,6 +8,9 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const docsRouter = require('./routes/docs');
+const missionsRouter = require('./routes/missions');
+const structuresRouter = require('./routes/structures');
+const referantsRouter = require('./routes/referants');
 require('./models/connection')
 
 const app = express();
@@ -24,6 +27,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/docs', docsRouter);
+app.use('/missions', missionsRouter);
+app.use('/structures', structuresRouter);
+app.use('/referants', referantsRouter);
+
+
+const User = require("./models/users");
+
 
 
 module.exports = app;

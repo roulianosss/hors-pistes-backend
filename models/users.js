@@ -11,7 +11,7 @@ const adressSchema = mongoose.Schema({
 const contactSchema = mongoose.Schema({
   name: String,
   relation: String,
-  phoneNumber: Number
+  phone: Number
 })
 
 const userSchema = mongoose.Schema({
@@ -23,15 +23,15 @@ const userSchema = mongoose.Schema({
   photo: String,
   birthDate: Date,
   birthCity: String,
-  phoneNumber: Number,
-  adress: adressSchema,
-  emergencyContact: contactSchema,
+  phone: Number,
   degrees: String,
   occupation: String,
   IBAN: String,
   CESNumber: String,
   ICNumber: String,
   ICExpirationDate: String,
+  adress: adressSchema,
+  emergencyContact: contactSchema,
   mission: [{ type: mongoose.Schema.Types.ObjectId, ref: 'missions' }],
 });
 

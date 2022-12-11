@@ -10,17 +10,16 @@ const contactSchema = mongoose.Schema({
     name: String,
     surname: String,
     email: String,
-    phoneNumber: String
+    phone: String
 })
 
 const structureSchema = mongoose.Schema({
     name: String,
-    adress: adressSchema,
-    country: String,
-    projectReferent: contactSchema,
-    legalReferent: contactSchema,
     OIDNumber: String,
     qualityLabelHostNumber: String,
+    adress: adressSchema,
+    projectReferent: contactSchema,
+    legalReferent: contactSchema,
 });
 
 const Structure = mongoose.model("structures", structureSchema);

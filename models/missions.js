@@ -32,7 +32,7 @@ const missionSchema = mongoose.Schema({
     financialInformations: financialInformationsSchema,
     projectReferant: { type: mongoose.Schema.Types.ObjectId, ref: 'referants' },
     missionReferant: contactSchema,
-    practicalInformation: [String],
+    practicalInformation: String,
 });
 
 const Mission = mongoose.model("missions", missionSchema);

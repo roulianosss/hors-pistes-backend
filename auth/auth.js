@@ -15,9 +15,7 @@ module.exports = (req, res, next) => {
             const message = `The user is not authorized to access this resource.`
             return res.status(401).json({ message, data: error})
         }
-
         const userId = decodedToken.userId
-        
         if(req.body.userId && req.body.userId !== userId) {
             const message = `This user is invalid.`
             res.status(401).json({ message })

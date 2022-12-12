@@ -2,21 +2,22 @@ const express = require("express");
 const router = express.Router();
 const Structure = require("../models/structures");
 const { checkBody } = require("../modules/checkBody");
+const auth = require("../auth/auth");
 
 // Get all structures
-router.get("/", async (req, res, next) => {
+router.get("/", auth, async (req, res, next) => {
   const allStructures = await Structure.find();
-  res.json(allStructures);
+  res.json({ result: true, data: allStructures, severity: 'success', message: 'All structures have been retrieved !' });
 });
 
 // Get one structure information
-router.get("/:structureId", async (req, res) => {
+router.get("/:structureId", auth, async (req, res) => {
   const structure = await Structure.findById(req.params.structureId);
-  res.json(structure);
+  res.json({ result: true, data: structure, severity: 'success', message: 'Structure have been retrieved !' });
 });
 
 // delete an Structure
-router.delete("/:structureId", async (req, res) => {
+router.delete("/:structureId", auth, async (req, res) => {
   const structure = await Structure.findOneAndDelete({
     _id: req.params.structureId
   });
@@ -29,7 +30,7 @@ router.delete("/:structureId", async (req, res) => {
 });
 
 // Create new Structure
-router.post("/create", async (req, res) => {
+router.post("/create", auth, async (req, res) => {
   if (!checkBody(req.body, ["name"])) {
     res.json({
       result: false,
@@ -51,7 +52,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Update a mission
-router.post("/update", async (req, res, next) => {
+router.post("/update", auth, async (req, res, next) => {
   if (!checkBody(req.body, ["name"])) {
     return res.json({ result: false, message: "Missing or empty fields" });
   }

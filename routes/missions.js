@@ -3,9 +3,10 @@ const router = express.Router();
 const Mission = require("../models/missions");
 const User = require("../models/users");
 const { checkBody } = require("../modules/checkBody");
+const auth = require("../auth/auth");
 
 // Fetch all Missions
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const allMissions = await Mission.find()
     .populate("hostStructure")
     .populate("missionReferant")
@@ -13,11 +14,11 @@ router.get("/", async (req, res) => {
     .populate("coordinationStructure")
     .populate("projectReferant")
     .populate("volunteer");
-  res.json(allMissions);
+  res.json({ result: true, data: allMissions, severity: 'success', message: 'All missions have been retrieved !' });
 });
 
 // Fetch by Id
-router.get("/:missionId", async (req, res) => {
+router.get("/:missionId", auth, async (req, res) => {
   const mission = await Mission.findById(req.params.missionId)
     .populate("hostStructure")
     .populate("missionReferant")
@@ -25,11 +26,11 @@ router.get("/:missionId", async (req, res) => {
     .populate("coordinationStructure")
     .populate("projectReferant")
     .populate("volunteer");
-  res.json(mission);
+  res.json({ result: true, data: mission, severity: 'success', message: 'All users have been retrieved !' });
 });
 
 // Delete By Id
-router.delete("/:missionId/:userId", async (req, res) => {
+router.delete("/:missionId/:userId", auth, async (req, res) => {
   const mission = await Mission.findOneAndDelete({ _id: req.params.missionId });
 
   await User.findByIdAndUpdate(req.params.userId, {
@@ -44,7 +45,7 @@ router.delete("/:missionId/:userId", async (req, res) => {
 });
 
 // Create new mission
-router.post("/create", async (req, res) => {
+router.post("/create", auth, async (req, res) => {
   if (!checkBody(req.body, ["projectName"])) {
     res.json({
       result: false,
@@ -77,7 +78,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Update a mission
-router.post("/update", async (req, res, next) => {
+router.post("/update", auth, async (req, res, next) => {
   if (!checkBody(req.body, ["projectName"])) {
     return res.json({ result: false, message: "Missing or empty fields" });
   }

@@ -9,19 +9,19 @@ const privateKey = require("../auth/private_key");
 const auth = require("../auth/auth");
 
 // fetch all users
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const allUsers = await User.find().populate("mission");
-  res.json(allUsers);
+  res.json({ result: true, data: allUsers, severity: 'success', message: 'All users have been retrieved !' });
 });
 
 // fetch un utilisateur precis
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", auth, async (req, res) => {
   const user = await User.findById(req.params.userId).populate("mission");
-  res.json(user);
+  res.json({ result: true, data: user, severity: 'success', message: 'User have been retrieved !' });
 });
 
 // delete an user
-router.delete("/:userId/:missionId", async (req, res) => {
+router.delete("/:userId/:missionId", auth, async (req, res) => {
   const user = await User.findOneAndDelete({ _id: req.params.userId });
   await Mission.findByIdAndUpdate(req.params.missionId, {
     volunteer: "639496d556430998cd5eabf5"
@@ -35,12 +35,12 @@ router.delete("/:userId/:missionId", async (req, res) => {
 });
 
 // fetch une supression de tout les utilisateurs
-router.delete("/allUsers", async (req, res) => {
+router.delete("/allUsers", auth, async (req, res) => {
   const deleteAllUsers = await User.deleteMany({});
   res.json(deleteAllUsers);
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", auth, async (req, res) => {
   if (!checkBody(req.body, ["email"])) {
     res.json({
       result: false,
@@ -72,7 +72,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Fetch un Update Utilisateur
-router.post("/update", async (req, res) => {
+router.post("/update", auth, async (req, res) => {
   if (!checkBody(req.body, ["email"])) {
     res.json({
       result: false,
@@ -124,7 +124,7 @@ router.post("/signin", async (req, res) => {
         token
       });
     } else {
-      const message = "Password entered was incorrect.";
+      const message = "User and/or Password entered was incorrect.";
       res.json({ result: false, severity: "error", message });
     }
   } catch (error) {

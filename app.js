@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users');
 const missionsRouter = require('./routes/missions');
 const structuresRouter = require('./routes/structures');
 const referantsRouter = require('./routes/referants');
+const adminsRouter = require('./routes/admins');
 require('./models/connection')
 
 const app = express();
@@ -30,9 +31,9 @@ app.use('/docs', docsRouter);
 app.use('/missions', missionsRouter);
 app.use('/structures', structuresRouter);
 app.use('/referants', referantsRouter);
+app.use('/admins', adminsRouter);
 
 
-const User = require("./models/users");
 
 
 

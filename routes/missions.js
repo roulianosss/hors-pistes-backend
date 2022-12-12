@@ -59,7 +59,7 @@ router.post("/create", auth, async (req, res) => {
   if (response === null) {
     const newMission = await new Mission(req.body);
     const mission = await newMission.save();
-    if (req.body.volonteer !== "639496d556430998cd5eabf5") {
+    if (mission.volunteer.toString() !== "639496d556430998cd5eabf5") {
       if (req.body.projectName !== "none") {
         await User.findByIdAndUpdate(req.body.volunteer, {
           mission: mission._id

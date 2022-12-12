@@ -55,7 +55,7 @@ router.post("/create", auth, async (req, res) => {
     const hash = bcrypt.hashSync(password, 10);
     const newUser = await new User({ ...req.body, password: hash });
     const user = await newUser.save();
-    if (req.body.mission._id !== "639494b656430998cd5eabb1") {
+    if (user.mission.toString() !== "639494b656430998cd5eabb1") {
       await Mission.findByIdAndUpdate(req.body.mission._id, {
         volunteer: user._id
       })
@@ -81,10 +81,8 @@ router.post("/update", auth, async (req, res) => {
     });
     return;
   }
-
   const response = await User.findByIdAndUpdate(req.body.userId, req.body);
   const oldMission = response.mission;
-
   if (req.body.mission._id !== "639494b656430998cd5eabb1") {
     await Mission.findByIdAndUpdate(req.body.mission._id, {
       volunteer: req.body.userId
@@ -94,11 +92,9 @@ router.post("/update", auth, async (req, res) => {
       volunteer: "639496d556430998cd5eabf5"
     });
   }
-
   const message = "Volunteer updated successfully !";
   res.json({ result: true, severity: "success", message, data: response });
 });
-
 // SignIn a user
 router.post("/signin", async (req, res) => {
   if (!checkBody(req.body, ["username", "password"])) {
@@ -132,7 +128,6 @@ router.post("/signin", async (req, res) => {
     res.json({ result: false, message, severity: "error", data: error });
   }
 });
-
 // SignUp a user
 router.post("/signup", async (req, res) => {
   if (!checkBody(req.body, ["name", "password", "email", "birth", "surname"])) {

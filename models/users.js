@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 
 
-const adressSchema = mongoose.Schema({
+const addressSchema = mongoose.Schema({
+  street: String,
   zipCode: String,
   city: String,
   country: String
@@ -15,12 +16,15 @@ const contactSchema = mongoose.Schema({
 })
 
 const userSchema = mongoose.Schema({
+  email: String,
+  connectionCode: String,
+  folderId: String,
   name: String,
   surname: String,
   gender: String,
-  email: String,
   password: String,
   photo: String,
+  passportImg: String,
   birthDate: Date,
   birthCity: String,
   phone: String,
@@ -30,7 +34,7 @@ const userSchema = mongoose.Schema({
   CESNumber: String,
   ICNumber: String,
   ICExpirationDate: String,
-  adress: adressSchema,
+  address: addressSchema,
   emergencyContact: contactSchema,
   mission: { type: mongoose.Schema.Types.ObjectId, ref: 'missions' },
 });

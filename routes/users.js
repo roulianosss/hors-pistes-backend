@@ -51,9 +51,7 @@ router.post("/create", auth, async (req, res) => {
   }
   const response = await User.findOne({ email: req.body.email });
   if (response === null) {
-    const password = "123";
-    const hash = bcrypt.hashSync(password, 10);
-    const newUser = await new User({ ...req.body, password: hash });
+    const newUser = await new User({ ...req.body, email: req.body.email.toLowerCase() });
     const user = await newUser.save();
     if (user.mission.toString() !== "639494b656430998cd5eabb1") {
       await Mission.findByIdAndUpdate(req.body.mission._id, {
@@ -95,9 +93,10 @@ router.post("/update", auth, async (req, res) => {
   const message = "Volunteer updated successfully !";
   res.json({ result: true, severity: "success", message, data: response });
 });
-// SignIn a user
-router.post("/signin", async (req, res) => {
-  if (!checkBody(req.body, ["username", "password"])) {
+
+// First Connection
+router.post("/firstConnection", async (req, res) => {
+  if (!checkBody(req.body, ["email", "connectionCode"])) {
     res.json({
       result: false,
       severity: "error",
@@ -105,9 +104,40 @@ router.post("/signin", async (req, res) => {
     });
     return;
   }
-  try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username: username });
+  
+    const { email, connectionCode } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (user && connectionCode === user.connectionCode) {
+      const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
+      const message = "Volunteer connected successfully !";
+      res.json({
+        result: true,
+        severity: "success",
+        message,
+        data: user,
+        token
+      });
+    } else {
+      const message = "User and/or Password entered was incorrect.";
+      res.json({ result: false, severity: "error", message });
+    }
+  
+});
+
+
+// SignIn a user
+router.post("/signin", async (req, res) => {
+  if (!checkBody(req.body, ["email", "password"])) {
+    res.json({
+      result: false,
+      severity: "error",
+      message: "Missing or empty fields"
+    });
+    return;
+  }
+  
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (user && bcrypt.compareSync(password, user.password)) {
       const { _id, email } = user;
       const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
@@ -116,21 +146,18 @@ router.post("/signin", async (req, res) => {
         result: true,
         severity: "success",
         message,
-        data: { _id, username, email },
+        data: user,
         token
       });
     } else {
       const message = "User and/or Password entered was incorrect.";
       res.json({ result: false, severity: "error", message });
     }
-  } catch (error) {
-    const message = "An error has occured, please retry later.";
-    res.json({ result: false, message, severity: "error", data: error });
-  }
+  
 });
 // SignUp a user
 router.post("/signup", async (req, res) => {
-  if (!checkBody(req.body, ["name", "password", "email", "birth", "surname"])) {
+  if (!checkBody(req.body, ["password", "email"])) {
     res.json({
       result: false,
       severity: "error",
@@ -138,16 +165,13 @@ router.post("/signup", async (req, res) => {
     });
     return;
   }
-  try {
-    const { name, password, email, surname, birth } = req.body;
+  
+    const { password, email } = req.body;
     const response = await User.findOne({ email: email });
     if (response === null) {
       const hash = bcrypt.hashSync(password, 10);
       const newUser = await new User({
-        email,
-        name,
-        surname,
-        birthDate: birth,
+        email: email.toLowerCase(),
         password: hash
       });
       const user = await newUser.save();
@@ -157,7 +181,7 @@ router.post("/signup", async (req, res) => {
       res.json({
         result: true,
         message,
-        data: { _id, name, birthDate, surname, email },
+        data: { _id, email },
         token
       });
     } else {
@@ -167,10 +191,7 @@ router.post("/signup", async (req, res) => {
         error: "User already exists"
       });
     }
-  } catch (error) {
-    const message = "An error has occured, please retry later.";
-    res.json({ result: false, severity: "error", message, data: error });
-  }
+  
 });
 
 module.exports = router;

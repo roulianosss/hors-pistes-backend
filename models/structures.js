@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const adressSchema = mongoose.Schema({
+const addressSchema = mongoose.Schema({
     zipCode: String,
     city: String,
     country: String
@@ -17,7 +17,8 @@ const structureSchema = mongoose.Schema({
     name: String,
     OIDNumber: String,
     qualityLabelHostNumber: String,
-    adress: adressSchema,
+    siret: String,
+    address: addressSchema,
     projectReferent: contactSchema,
     legalReferent: contactSchema,
 });

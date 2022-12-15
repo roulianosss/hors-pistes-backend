@@ -8,12 +8,9 @@ const { google } = require("googleapis");
 //   res.download(file); // Set disposition and send it.
 // });
 
-
-
 router.post("/createFolders", async (req, res) => {
   const finalFolders = ["A Valider", "A Signer", "Complet"];
   const connectionString = req.body.connectionString.split("/");
-  console.log(connectionString);
   if (connectionString.filter((el) => el !== "").length !== 3) {
     return res.json({
       result: false,
@@ -43,7 +40,6 @@ router.post("/createFolders", async (req, res) => {
           fields: "id"
         });
         activeFolder = file.data.id;
-        console.log(file.data.id);
       } catch (err) {
         throw err;
       }
@@ -93,50 +89,54 @@ router.post("/createFolders", async (req, res) => {
       }
     }
 
-    finalFolders.map(async (folder) => {
-      const response = await drive.files.list({
-        q: `name='${folder}' and parents='${activeFolder}'`
-      });
-      if (response.data.files.length) {
-        return
-      } else {
-        const fileMetadata = {
-          name: `${folder}`,
-          mimeType: "application/vnd.google-apps.folder",
-          parents: [activeFolder]
-        };
-        try {
-          const file = await drive.files.create({
-            resource: fileMetadata,
-            fields: "id"
-          });
-          activeFolder = file.data.id;
-          console.log(file.data.id);
-        } catch (err) {
-          throw err;
+    const folderIds = await Promise.all(
+      finalFolders.map(async (folder) => {
+        const response = await drive.files.list({
+          q: `name='${folder}' and parents='${activeFolder}'`
+        });
+        if (response.data.files.length) {
+          return;
+        } else {
+          const fileMetadata = {
+            name: `${folder}`,
+            mimeType: "application/vnd.google-apps.folder",
+            parents: [activeFolder]
+          };
+          try {
+            const file = await drive.files.create({
+              resource: fileMetadata,
+              fields: "id"
+            });
+            return file.data.id
+          } catch (err) {
+            throw err;
+          }
         }
-      }
-    });
-
+      })
+    );
     res.json({
       result: true,
       severity: "success",
       message: "La structure des dossiers a bien été crée",
-      data: { id: activeFolder }
+      data: {
+        mainFolderId: activeFolder,
+        toValidateFolderId: folderIds[0],
+        toSignFolderId: folderIds[1],
+        completeFolderId: folderIds[2]
+      }
     });
   } catch (err) {
-    // TODO(developer) - Handle error
     throw err;
   }
 });
 
 //READ FILE LIST
-router.get("/list", async (req, res) => {
+router.get("/listFolder/:folderId", async (req, res) => {
   const service = google.drive({ version: "v3", auth });
   const files = [];
   try {
     const response = await service.files.list({
-      q: `mimeType=\'application/vnd.google-apps.folder\' and parents='1kOlpheuh4RE2WOAw97GVRIisqdYcyI_J'`
+      q: `parents='${req.params.folderId}'`
     });
     Array.prototype.push.apply(files, response.files);
     response.data.files.forEach(function (file) {

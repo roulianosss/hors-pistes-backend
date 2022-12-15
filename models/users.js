@@ -11,14 +11,21 @@ const addressSchema = mongoose.Schema({
 
 const contactSchema = mongoose.Schema({
   name: String,
+  surname: String,
   relation: String,
   phone: String
+})
+
+const folderIdsSchema = mongoose.Schema({
+  mainFolderId: String,
+  toValidate: String,
+  toSign: String,
+  completeFolderId: String,
 })
 
 const userSchema = mongoose.Schema({
   email: String,
   connectionCode: String,
-  folderId: String,
   name: String,
   surname: String,
   gender: String,
@@ -34,6 +41,7 @@ const userSchema = mongoose.Schema({
   CESNumber: String,
   ICNumber: String,
   ICExpirationDate: String,
+  folderIds: folderIdsSchema,
   address: addressSchema,
   emergencyContact: contactSchema,
   mission: { type: mongoose.Schema.Types.ObjectId, ref: 'missions' },

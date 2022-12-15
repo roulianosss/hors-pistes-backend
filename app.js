@@ -12,6 +12,7 @@ const missionsRouter = require('./routes/missions');
 const structuresRouter = require('./routes/structures');
 const referantsRouter = require('./routes/referants');
 const adminsRouter = require('./routes/admins');
+const signatureRouter = require('./routes/signature')
 require('./models/connection')
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/missions', missionsRouter);
 app.use('/structures', structuresRouter);
 app.use('/referants', referantsRouter);
 app.use('/admins', adminsRouter);
+app.use('/signature', signatureRouter)
 
 
 

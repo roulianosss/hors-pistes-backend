@@ -10,105 +10,157 @@ const auth = require("../auth/auth");
 
 // fetch all users
 router.get("/", auth, async (req, res) => {
-  const allUsers = await User.find().populate("mission");
-  res.json({ result: true, data: allUsers, severity: 'success', message: 'All users have been retrieved !' });
+  try {
+    const allUsers = await User.find().populate("mission");
+    res.json({
+      result: true,
+      data: allUsers,
+      severity: "success",
+      message: "All users have been retrieved !"
+    });
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
 
 // fetch un utilisateur precis
 router.get("/:userId", auth, async (req, res) => {
-  const user = await User.findById(req.params.userId).populate("mission");
-  res.json({ result: true, data: user, severity: 'success', message: 'User have been retrieved !' });
+  try {
+    const user = await User.findById(req.params.userId).populate("mission");
+    res.json({
+      result: true,
+      data: user,
+      severity: "success",
+      message: "User have been retrieved !"
+    });
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
 
 // delete an user
 router.delete("/:userId/:missionId", auth, async (req, res) => {
-  const user = await User.findOneAndDelete({ _id: req.params.userId });
-  await Mission.findByIdAndUpdate(req.params.missionId, {
-    volunteer: "639496d556430998cd5eabf5"
-  });
-  res.json({
-    result: true,
-    severity: "success",
-    message: "User has been deleted successfully !",
-    userInfo: user
-  });
+  try {
+    const user = await User.findOneAndDelete({ _id: req.params.userId });
+    await Mission.findByIdAndUpdate(req.params.missionId, {
+      volunteer: "639496d556430998cd5eabf5"
+    });
+    res.json({
+      result: true,
+      severity: "success",
+      message: "User has been deleted successfully !",
+      userInfo: user
+    });
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
 
 // fetch une supression de tout les utilisateurs
 router.delete("/allUsers", auth, async (req, res) => {
-  const deleteAllUsers = await User.deleteMany({});
-  res.json(deleteAllUsers);
+  try {
+    const deleteAllUsers = await User.deleteMany({});
+    res.json(deleteAllUsers);
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
 
 router.post("/create", auth, async (req, res) => {
-  if (!checkBody(req.body, ["email"])) {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "Missing or empty fields"
-    });
-    return;
-  }
-  const response = await User.findOne({ email: req.body.email });
-  if (response === null) {
-    const newUser = await new User({ ...req.body, email: req.body.email.toLowerCase() });
-    const user = await newUser.save();
-    if (user.mission.toString() !== "639494b656430998cd5eabb1") {
-      await Mission.findByIdAndUpdate(req.body.mission._id, {
-        volunteer: user._id
-      })
+  try {
+    if (!checkBody(req.body, ["email"])) {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "Missing or empty fields"
+      });
+      return;
     }
-    const message = "User created successfully !";
-    res.json({ result: true, severity: "success", message, data: user });
-  } else {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "User already exists"
-    });
+    const response = await User.findOne({ email: req.body.email });
+    if (response === null) {
+      const newUser = await new User({
+        ...req.body,
+        email: req.body.email.toLowerCase()
+      });
+      const user = await newUser.save();
+      if (user.mission.toString() !== "639494b656430998cd5eabb1") {
+        await Mission.findByIdAndUpdate(req.body.mission._id, {
+          volunteer: user._id
+        });
+      }
+      const message = "User created successfully !";
+      res.json({ result: true, severity: "success", message, data: user });
+    } else {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "User already exists"
+      });
+    }
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
   }
 });
 
 // Fetch un Update Utilisateur
 router.post("/update", auth, async (req, res) => {
-  if (!checkBody(req.body, ["email"])) {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "Missing or empty fields"
-    });
-    return;
+  try {
+    if (!checkBody(req.body, ["email"])) {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "Missing or empty fields"
+      });
+      return;
+    }
+    const response = await User.findByIdAndUpdate(req.body.userId, req.body);
+    const oldMission = response.mission;
+    if (req.body.mission._id !== "639494b656430998cd5eabb1") {
+      await Mission.findByIdAndUpdate(req.body.mission._id, {
+        volunteer: req.body.userId
+      });
+    } else {
+      await Mission.findByIdAndUpdate(oldMission, {
+        volunteer: "639496d556430998cd5eabf5"
+      });
+    }
+    const message = "Volunteer updated successfully !";
+    res.json({ result: true, severity: "success", message, data: response });
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
   }
-  const response = await User.findByIdAndUpdate(req.body.userId, req.body);
-  const oldMission = response.mission;
-  if (req.body.mission._id !== "639494b656430998cd5eabb1") {
-    await Mission.findByIdAndUpdate(req.body.mission._id, {
-      volunteer: req.body.userId
-    });
-  } else {
-    await Mission.findByIdAndUpdate(oldMission, {
-      volunteer: "639496d556430998cd5eabf5"
-    });
-  }
-  const message = "Volunteer updated successfully !";
-  res.json({ result: true, severity: "success", message, data: response });
 });
 
 // First Connection
 router.post("/firstConnection", async (req, res) => {
-  if (!checkBody(req.body, ["email", "connectionCode"])) {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "Missing or empty fields"
-    });
-    return;
-  }
-  
+  try {
+    if (!checkBody(req.body, ["email", "connectionCode"])) {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "Missing or empty fields"
+      });
+      return;
+    }
+
     const { email, connectionCode } = req.body;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (user && connectionCode === user.connectionCode) {
-      const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
+      const token = jwt.sign({ userId: user._id }, privateKey, {
+        expiresIn: "24h"
+      });
       const message = "Volunteer connected successfully !";
       res.json({
         result: true,
@@ -121,21 +173,25 @@ router.post("/firstConnection", async (req, res) => {
       const message = "User and/or Password entered was incorrect.";
       res.json({ result: false, severity: "error", message });
     }
-  
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
-
 
 // SignIn a user
 router.post("/signin", async (req, res) => {
-  if (!checkBody(req.body, ["email", "password"])) {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "Missing or empty fields"
-    });
-    return;
-  }
-  
+  try {
+    if (!checkBody(req.body, ["email", "password"])) {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "Missing or empty fields"
+      });
+      return;
+    }
+
     const { email, password } = req.body;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (user && bcrypt.compareSync(password, user.password)) {
@@ -153,19 +209,25 @@ router.post("/signin", async (req, res) => {
       const message = "User and/or Password entered was incorrect.";
       res.json({ result: false, severity: "error", message });
     }
-  
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
+
 // SignUp a user
 router.post("/signup", async (req, res) => {
-  if (!checkBody(req.body, ["password", "email"])) {
-    res.json({
-      result: false,
-      severity: "error",
-      message: "Missing or empty fields"
-    });
-    return;
-  }
-  
+  try {
+    if (!checkBody(req.body, ["password", "email"])) {
+      res.json({
+        result: false,
+        severity: "error",
+        message: "Missing or empty fields"
+      });
+      return;
+    }
+
     const { password, email } = req.body;
     const response = await User.findOne({ email: email });
     if (response === null) {
@@ -191,7 +253,11 @@ router.post("/signup", async (req, res) => {
         error: "User already exists"
       });
     }
-  
+  } catch (err) {
+    const message = "An error has occured, please retry later.";
+    res.json({ result: false, message, severity: "error", data: err });
+    throw err;
+  }
 });
 
 module.exports = router;

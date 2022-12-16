@@ -14,7 +14,12 @@ router.get("/", auth, async (req, res) => {
     .populate("coordinationStructure")
     .populate("projectReferant")
     .populate("volunteer");
-  res.json({ result: true, data: allMissions, severity: 'success', message: 'All missions have been retrieved !' });
+  res.json({
+    result: true,
+    data: allMissions,
+    severity: "success",
+    message: "All missions have been retrieved !"
+  });
 });
 
 // Fetch by Id
@@ -26,7 +31,28 @@ router.get("/:missionId", auth, async (req, res) => {
     .populate("coordinationStructure")
     .populate("projectReferant")
     .populate("volunteer");
-  res.json({ result: true, data: mission, severity: 'success', message: 'All users have been retrieved !' });
+  res.json({
+    result: true,
+    data: mission,
+    severity: "success",
+    message: "All users have been retrieved !"
+  });
+});
+
+router.get("/:missionId/:userId", auth, async (req, res) => {
+  const mission = await Mission.find({ volunteer: req.params.userId })
+    .populate("hostStructure")
+    .populate("missionReferant")
+    .populate("supportStructure")
+    .populate("coordinationStructure")
+    .populate("projectReferant")
+    .populate("volunteer");
+  res.json({
+    result: true,
+    data: mission,
+    severity: "success",
+    message: "All users have been retrieved !"
+  });
 });
 
 // Delete By Id

@@ -17,6 +17,12 @@ require('./models/connection')
 
 const app = express();
 
+const fileUpload = require('express-fileupload');
+app.use(fileUpload({
+    createParentPath: true
+}))
+
+
 const cors = require('cors');
 app.use(cors());
 

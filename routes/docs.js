@@ -2,11 +2,44 @@ const express = require("express");
 const router = express.Router();
 const { auth } = require("../auth/auth-google.js");
 const { google } = require("googleapis");
+const fs = require('fs');
 
-// app.get('/download', function(req, res){
-//   const file = `${__dirname}/upload-folder/dramaticpenguin.MOV`;
-//   res.download(file); // Set disposition and send it.
-// });
+
+router.post("/uploads/:folderId", async (req, res) => {
+  console.log(req.files, req.params.folderId);
+  const path = `./tmp/${req.files.name}.jpg`;
+  const resultMove = await req.files.document.mv(path);
+
+  const service = google.drive({ version: "v3", auth });
+  const fileMetadata = {
+    name: req.files.name,
+    parents: [req.params.folderId]
+  };
+  const media = {
+    mimeType: req.files.mimetype,
+    body: fs.createReadStream(path)
+  };
+  try {
+    const file = await service.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id"
+    });
+    console.log("File Id:", file.data.id);
+    res.json({ result: true, message: "Le fichier a bien été uploadé" });
+    return file.data.id;
+  } catch (err) {
+    // TODO(developer) - Handle error
+    throw err;
+  }
+  fs.unlinkSync(photoPath);
+});
+
+// const resultCloudinary = await cloudinary.uploader.upload(photoPath)
+
+// fs.unlinkSync(photoPath);
+
+
 
 router.post("/createFolders", async (req, res) => {
   const finalFolders = ["A Valider", "A Signer", "Complet"];
@@ -107,7 +140,7 @@ router.post("/createFolders", async (req, res) => {
               resource: fileMetadata,
               fields: "id"
             });
-            return file.data.id
+            return file.data.id;
           } catch (err) {
             throw err;
           }

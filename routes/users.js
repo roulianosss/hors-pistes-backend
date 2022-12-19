@@ -233,6 +233,7 @@ router.post("/signup", async (req, res) => {
     if (response === null) {
       const hash = bcrypt.hashSync(password, 10);
       const newUser = await new User({
+        ...req.body,
         email: email.toLowerCase(),
         password: hash
       });

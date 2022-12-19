@@ -1,27 +1,25 @@
 const mongoose = require("mongoose");
 
-
-
 const addressSchema = mongoose.Schema({
   street: String,
   zipCode: String,
   city: String,
   country: String
-})
+});
 
 const contactSchema = mongoose.Schema({
   name: String,
   surname: String,
   relation: String,
   phone: String
-})
+});
 
 const folderIdsSchema = mongoose.Schema({
   mainFolderId: String,
-  toValidate: String,
-  toSign: String,
-  completeFolderId: String,
-})
+  toValidateFolderId: String,
+  toSignFolderId: String,
+  completeFolderId: String
+});
 
 const userSchema = mongoose.Schema({
   email: String,
@@ -44,7 +42,7 @@ const userSchema = mongoose.Schema({
   folderIds: folderIdsSchema,
   address: addressSchema,
   emergencyContact: contactSchema,
-  mission: { type: mongoose.Schema.Types.ObjectId, ref: 'missions' },
+  mission: { type: mongoose.Schema.Types.ObjectId, ref: "missions" }
 });
 
 const User = mongoose.model("users", userSchema);

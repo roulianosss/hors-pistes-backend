@@ -3,6 +3,7 @@ const router = express.Router();
 const { auth } = require("../auth/auth-google.js");
 const { google } = require("googleapis");
 const fs = require("fs");
+const uniqid = require('uniqid');
 
 router.post("/uploads/:folderId", async (req, res) => {
   try {
@@ -239,5 +240,103 @@ router.post("/replaceWords", (req, res) => {
     throw err;
   }
 });
+
+//Create documents in volunteer folder
+router.post('/createFiles', async (req, res) => {
+  const documents = []
+  // const documentsId = []
+  const user = {
+    passportImg: "",
+    connectionCode: "",
+    token: "",
+    userId: "",
+    mission: {
+      projectName: ''
+    },
+    missionType: 'envoie',
+    name: "tagawa",
+    surname: "benjamin",
+    gender: "",
+    password: "",
+    email: "",
+    passportImg: "",
+    folderIds: {
+      mainFolderId: "",
+      completeFolderId: "",
+      toSignFolderId: "",
+      toValidateFolderId: "1ySHfjBTb0S_51t-uoK_XaGyCCjmhTelz",
+    },
+    photo: "",
+    birthDate: "",
+    birthCity: "",
+    phone: "",
+    degrees: "",
+    occupation: "",
+    RIBImg: "",
+    IBAN: "",
+    CESNumber: "",
+    ICNumber: "",
+    ICExpirationDate: "",
+    address: {
+      street: "",
+      zipCode: "",
+      city: "",
+      country: "",
+    },
+    emergencyContact: {
+      name: "",
+      surname: "",
+      relation: "",
+      phone: "",
+    }
+  }
+
+  if (user.missionType === 'envoie') {
+    documents.push({
+      documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+      documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+    },
+    {
+      documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
+      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+    }) 
+  } else if (user.missionType === 'accueil') {
+            documents.push({
+              documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+              documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+              },
+              {
+              documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
+              documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+            })
+          }
+
+  const documentsId = documents.map(async (doc) => {
+    try {
+      const drive = google.drive({ version: "v3", auth });
+      const copy = await drive.files.copy(
+        {
+          fileId: doc.documentId,
+          requestBody: {
+            name: doc.documentName,
+            mimeType: "application/msword",
+            parents: [user.folderIds.toValidateFolderId], 
+          }
+        },
+        async (err, response) => {
+          if (err) return console.log("The API returned an error: " + err);
+          // return await response.data.id;
+          await response.data
+          console.log(response.data);
+        }
+      );
+    } catch (err) {
+      const message = "An error has occured, please retry later.";
+      res.json({ result: false, message, severity: "error", data: err });
+      throw err;
+    }
+  })
+  console.log(documentsId);
+})
 
 module.exports = router;

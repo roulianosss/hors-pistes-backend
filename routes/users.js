@@ -193,7 +193,7 @@ router.post("/signin", async (req, res) => {
     }
 
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.toLowerCase() }).populate('mission');
     if (user && bcrypt.compareSync(password, user.password)) {
       const { _id, email } = user;
       const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
@@ -238,15 +238,15 @@ router.post("/signup", async (req, res) => {
         ...req.body,
         email: email.toLowerCase(),
         password: hash
-      }
-    );
-    const { _id } = user;
-    const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
+      },
+      {new: true}
+    ).populate('mission');
+    const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
     const message = "User connected successfully !";
     res.json({
       result: true,
       message,
-      data: { _id, email },
+      data: user,
       token
     });
   } catch (err) {

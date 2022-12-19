@@ -112,7 +112,8 @@ router.post("/createFolders", async (req, res) => {
           q: `name='${folder}' and parents='${activeFolder}'`
         });
         if (response.data.files.length) {
-          return;
+          console.log(response.data.files)
+          return response.data.files[0].id
         } else {
           const fileMetadata = {
             name: `${folder}`,
@@ -128,6 +129,7 @@ router.post("/createFolders", async (req, res) => {
         }
       })
     );
+    console.log(folderIds)
     res.json({
       result: true,
       severity: "success",

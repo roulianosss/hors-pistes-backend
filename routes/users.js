@@ -218,6 +218,7 @@ router.post("/signin", async (req, res) => {
 
 // SignUp a user
 router.post("/signup", async (req, res) => {
+  console.log(req.body);
   try {
     if (!checkBody(req.body, ["password", "email"])) {
       res.json({
@@ -229,31 +230,25 @@ router.post("/signup", async (req, res) => {
     }
 
     const { password, email } = req.body;
-    const response = await User.findOne({ email: email });
-    if (response === null) {
-      const hash = bcrypt.hashSync(password, 10);
-      const newUser = await new User({
+
+    const hash = bcrypt.hashSync(password, 10);
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      {
         ...req.body,
         email: email.toLowerCase(),
         password: hash
-      });
-      const user = await newUser.save();
-      const { _id } = user;
-      const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
-      const message = "User connected successfully !";
-      res.json({
-        result: true,
-        message,
-        data: { _id, email },
-        token
-      });
-    } else {
-      res.json({
-        result: false,
-        severity: "error",
-        error: "User already exists"
-      });
-    }
+      }
+    );
+    const { _id } = user;
+    const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
+    const message = "User connected successfully !";
+    res.json({
+      result: true,
+      message,
+      data: { _id, email },
+      token
+    });
   } catch (err) {
     const message = "An error has occured, please retry later.";
     res.json({ result: false, message, severity: "error", data: err });

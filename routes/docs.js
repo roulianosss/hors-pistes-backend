@@ -690,77 +690,8 @@ router.post("/replaceWords", (req, res) => {
   }
 });
 
-//Create documents in volunteer folder
+//Copy and pre-fill documents in volunteer folder
 router.post('/createFiles', async (req, res) => {
-  // const documentsId = []
-  
-  // if (user.missionType === 'envoie') {
-    //   documents.push({
-      //     documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-      //     documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-      //   },
-      //     {
-        //       documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
-        //       documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-        //     })
-        // } else if (user.missionType === 'accueil') {
-          //   documents.push({
-            //     documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-            //     documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-            //   },
-            //     {
-              //       documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
-              //       documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-              //     })
-              // }
-              const documents = [{
-                    documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-                    documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-                  },
-                    {
-                      documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
-                      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-                    }]
-              let documentsId = []
-              const drive = google.drive({ version: "v3", auth });
-              // try {
-  documentsId = await Promise.all(
-    documents.map(async (doc) => {
-      const copy = await drive.files.copy(
-        {
-          fileId: doc.documentId,
-          requestBody: {
-            name: doc.documentName,
-            mimeType: "application/msword",
-            parents: [user.folderIds.toValidateFolderId],
-          }
-        },
-        function (err, response) {
-          if (err) {
-            console.log("The API returned an error: " + err);
-            res.send('error');
-            return;
-          }
-          console.log(response.data.id)
-          documentsId.push(response.data.id)
-        console.log(documentsId)
-      }
-      )
-     copy.execute(function(resp) {
-      console.log(resp.id)
-     })   
-       })
-       )
-      // } 
-      //  catch (err) {
-    //       const message = "An error has occured, please retry later.";
-    //       res.json({ result: false, message, severity: "error", data: err });
-    //       throw err;
-    // }
-  // console.log(documentsId)
-})
-
-router.post('/create', async (req, res) => {
   
   const drive = google.drive({ version: "v3", auth });
   const docs = google.docs({ version: "v1", auth });

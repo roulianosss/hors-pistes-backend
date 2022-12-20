@@ -216,7 +216,35 @@ router.post("/signin", async (req, res) => {
         populate: {
           path: "supportStructure"
         }
-      });
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "supportStructure",
+          populate: {
+            path: "projectReferent"
+          }
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "supportStructure",
+          populate: {
+            path: "address"
+          }
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "supportStructure",
+          populate: {
+            path: "legalReferent"
+          }
+        }
+      })
+
     if (user && bcrypt.compareSync(password, user.password)) {
       const { _id, email } = user;
       const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
@@ -264,30 +292,57 @@ router.post("/signup", async (req, res) => {
       },
       { new: true }
     )
-      .populate({
-        path: "mission",
+    .populate({
+      path: "mission",
+      populate: {
+        path: "projectReferant"
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "hostStructure"
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "coordinationStructure"
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "supportStructure"
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "supportStructure",
         populate: {
-          path: "projectReferant"
+          path: "projectReferent"
         }
-      })
-      .populate({
-        path: "mission",
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "supportStructure",
         populate: {
-          path: "hostStructure"
+          path: "address"
         }
-      })
-      .populate({
-        path: "mission",
+      }
+    })
+    .populate({
+      path: "mission",
+      populate: {
+        path: "supportStructure",
         populate: {
-          path: "coordinationStructure"
+          path: "legalReferent"
         }
-      })
-      .populate({
-        path: "mission",
-        populate: {
-          path: "supportStructure"
-        }
-      });
+      }
+    })
     const token = jwt.sign({ userId: user._id }, privateKey, {
       expiresIn: "24h"
     });

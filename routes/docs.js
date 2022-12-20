@@ -579,7 +579,7 @@ router.post("/createFolders", async (req, res) => {
         }
       })
     );
-    console.log(folderIds)
+    
     res.json({
       result: true,
       severity: "success",

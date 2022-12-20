@@ -191,9 +191,17 @@ router.post("/signin", async (req, res) => {
       });
       return;
     }
-    console.log(req.body)
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email.toLowerCase() }).populate('mission');
+    const user = await User.findOne({ email: email.toLowerCase() }).populate({
+      path: 'mission',
+      populate: {
+        path: 'projectReferant',
+        path: 'hostStructure',
+        path: 'coordinationStructure',
+        path: 'supportStructure',
+
+      }
+    });
     if (user && bcrypt.compareSync(password, user.password)) {
       const { _id, email } = user;
       const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
@@ -240,7 +248,16 @@ router.post("/signup", async (req, res) => {
         password: hash
       },
       {new: true}
-    ).populate('mission');
+    ).populate({
+      path: 'mission',
+      populate: {
+        path: 'projectReferant',
+        path: 'hostStructure',
+        path: 'coordinationStructure',
+        path: 'supportStructure',
+
+      }
+    })
     console.log(user)
     const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
     const message = "User connected successfully !";

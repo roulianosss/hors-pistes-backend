@@ -74,8 +74,9 @@ router.post("/", async (req, res) => {
 
     cloudinary.uploader.destroy(ID);
     const drive = google.drive({ version: "v3", auth });
-    const res8 = await drive.files.update( {fileId: req.body.documentID, addParents: req.body.completeFolder, removeParents: req.body.toSignFolder} );
-    console.log(res8)
+    const moveDoc = await drive.files.update( {fileId: req.body.documentID, addParents: req.body.completeFolder, removeParents: req.body.toSignFolder} );
+    console.log(moveDoc)
+    res.json({result: true, moveDoc})
 });
 
 module.exports = router;

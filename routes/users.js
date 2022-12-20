@@ -192,16 +192,31 @@ router.post("/signin", async (req, res) => {
       return;
     }
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email.toLowerCase() }).populate({
-      path: 'mission',
-      populate: {
-        path: 'projectReferant',
-        path: 'hostStructure',
-        path: 'coordinationStructure',
-        path: 'supportStructure',
-
-      }
-    });
+    const user = await User.findOne({ email: email.toLowerCase() })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "projectReferant"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "hostStructure"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "coordinationStructure"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "supportStructure"
+        }
+      });
     if (user && bcrypt.compareSync(password, user.password)) {
       const { _id, email } = user;
       const token = jwt.sign({ userId: _id }, privateKey, { expiresIn: "24h" });
@@ -247,17 +262,35 @@ router.post("/signup", async (req, res) => {
         email: email.toLowerCase(),
         password: hash
       },
-      {new: true}
-    ).populate({
-      path: 'mission',
-      populate: {
-        path: 'projectReferant',
-        path: 'hostStructure',
-        path: 'coordinationStructure',
-        path: 'supportStructure',
-      }
-    })
-    const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
+      { new: true }
+    )
+      .populate({
+        path: "mission",
+        populate: {
+          path: "projectReferant"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "hostStructure"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "coordinationStructure"
+        }
+      })
+      .populate({
+        path: "mission",
+        populate: {
+          path: "supportStructure"
+        }
+      });
+    const token = jwt.sign({ userId: user._id }, privateKey, {
+      expiresIn: "24h"
+    });
     const message = "User connected successfully !";
     res.json({
       result: true,

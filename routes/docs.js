@@ -766,7 +766,7 @@ router.post('/create', async (req, res) => {
   const docs = google.docs({ version: "v1", auth });
   const user = req.body.user
   const request = requestBody(user)
-=pùm:olnhbgvfd cx  const documents = []
+  const documents = []
 
   if (user.mission.missionType.includes('envoie')) 
   {

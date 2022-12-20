@@ -4,6 +4,455 @@ const { auth } = require("../auth/auth-google.js");
 const { google } = require("googleapis");
 const fs = require("fs");
 const uniqid = require('uniqid');
+const { response } = require("express");
+const { request } = require("http");
+
+const user = {
+  passportImg: "",
+  connectionCode: "",
+  token: "",
+  userId: "",
+  mission: {
+    missionType: 'envoie court terme',
+    projectName: 'A6-Envoi',
+    hostStructure: { 
+      name: 'La Rabia',
+      OIDNumber: 'OIDNumber',
+      qualityLabelHostNumber: 'QualityLabelHostNumber',
+      // siret: String,
+      address: {
+        street: '31 rue saint Bazile',
+        zipCode: '13016',
+        city: 'Paris',
+        country: 'Belgique'
+      },
+      projectReferant: {
+        name: 'Léo',
+        surname: 'Ferte',
+        email: 'lej@ghb.com',
+        phone: 'no phone'
+    },
+      legalReferant: 'contactSchema', 
+    },
+    coordinationStructure: '{ type: mongoose.Schema.Types.ObjectId, ref: }',
+    supportStructure: { 
+      name: 'Now Coworking',
+      OIDNumber: 'OIDNow',
+      qualityLabelHostNumber: 'QualityLabelHostNow',
+      // siret: String,
+      address: {
+        street: '31 rue Sainte',
+        zipCode: '13015',
+        city: 'Verone',
+        country: 'Italie'
+      },
+      projectReferent: {
+        name: 'Youss',
+        surname: 'NoCode',
+        email: 'Nocode@ghb.com',
+        phone: 'yes phone'
+    },
+      legalReferent: 'contactSchema', 
+    },
+    startDate: '11/02/203',
+    endDate: '11/04/2023',
+    subventionNumber: 'String',
+    missionTask: 'String',
+    financialInformations: '',
+    projectReferant: '{ type: mongoose.Schema.Types.ObjectId',
+    missionReferant: {
+      name: 'Tom',
+      surname: 'YesCode',
+      email: 'Yescode@ghb.com',
+      phone: 'Total phone'
+  },
+    practicalInformation: '',
+  },
+  missionType: 'envoie',
+  name: "tagawa",
+  surname: "benjamin",
+  gender: "non-binary",
+  password: "",
+  email: "bentag@gmail.com",
+  passportImg: "",
+  folderIds: {
+    mainFolderId: "",
+    completeFolderId: "",
+    toSignFolderId: "",
+    toValidateFolderId: "1ySHfjBTb0S_51t-uoK_XaGyCCjmhTelz",
+  },
+  photo: "",
+  birthDate: "11/06/1987",
+  birthCity: "Massilia",
+  phone: "+33650707865",
+  degrees: "Master 3",
+  occupation: "Drugs dealer",
+  RIBImg: "",
+  IBAN: "",
+  CESNumber: "1E230986",
+  ICNumber: "123467",
+  ICExpirationDate: "12/07/2034",
+  address: {
+    street: "33 rue du vieux Port",
+    zipCode: "13001",
+    city: "Marseille",
+    country: "France",
+  },
+  emergencyContact: {
+    name: "de la vega",
+    surname: "julianos",
+    relation: "boss",
+    phone: "no phone",
+  }
+}
+
+const requestBody = (user) => {
+return [
+  {
+    replaceAllText: {
+      replaceText: user.name,
+      containsText: {
+        text: `{volunteerName}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.surname,
+      containsText: {
+        text: `{volunteerSurname}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.birthDate,
+      containsText: {
+        text: `{volunteerBirthDate}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.birthCity,
+      containsText: {
+        text: `{volunteerNationality}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.email,
+      containsText: {
+        text: `{volunteerEmail}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.address.street}, ${user.address.zipCode} ${user.address.city}, ${user.address.country}`,
+      containsText: {
+        text: `{volunteerAddress}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.startDate,
+      containsText: {
+        text: `{missionStartDate}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.endDate,
+      containsText: {
+        text: `{missionEndDate}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.supportStructure.name,
+      containsText: {
+        text: `{supportStructureName}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.supportStructure.address.city,
+      containsText: {
+        text: `{supportStructureCity}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.supportStructure.address.country,
+      containsText: {
+        text: `{supportStructureCountry}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.supportStructure.qualityLabelHostNumber,
+      containsText: {
+        text: `{supportStructureQualityLabel}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.supportStructure.OIDNumber,
+      containsText: {
+        text: `{supportStructureOIDNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.supportStructure.address.street}, ${user.mission.supportStructure.address.zipCode} ${user.mission.supportStructure.address.city}, ${user.mission.supportStructure.address.country}`,
+      containsText: {
+        text: `{supportStructureAddress}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.supportStructure.projectReferent.phone}`,
+      containsText: {
+        text: `{supportStructureNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      containsText: {
+        text: `{hostStructureNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.supportStructure.projectReferent.email}`,
+      containsText: {
+        text: `{supportStructureEmail}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.projectReferant.email}`,
+      containsText: {
+        text: `{hostStructureEmail}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      containsText: {
+        text: `{hostStructurePhone}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.supportStructure.projectReferent.name} ${user.mission.supportStructure.projectReferent.surname}`,
+      containsText: {
+        text: `{supportStructureContact}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.hostStructure.name,
+      containsText: {
+        text: `{hostStructureName}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.hostStructure.address.city,
+      containsText: {
+        text: `{hostStructureCity}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.hostStructure.address.country,
+      containsText: {
+        text: `{hostStructureCountry}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.hostStructure.qualityLabelHostNumber,
+      containsText: {
+        text: `{hostStructureQualityLabel}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.hostStructure.OIDNumber,
+      containsText: {
+        text: `{hostStructureOIDNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.address.street}, ${user.mission.hostStructure.address.zipCode} ${user.mission.hostStructure.address.city}, ${user.mission.hostStructure.address.country}`,
+      containsText: {
+        text: `{hostStructureAddress}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      containsText: {
+        text: `{hoststructureNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.hostStructure.projectReferant.email}`,
+      containsText: {
+        text: `{hoststructureEmail}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.mission.supportStructure.projectReferent.name} ${user.mission.supportStructure.projectReferent.surname}`,
+      containsText: {
+        text: `{hostStructureContact}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.missionReferant.name,
+      containsText: {
+        text: `{missionReferantName}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.mission.missionReferant.surname,
+      containsText: {
+        text: `{missionReferantSurname}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.CESNumber,
+      containsText: {
+        text: `{volunteerCESNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.birthCity,
+      containsText: {
+        text: `{volunteerBirthCity}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.address.street}, ${user.address.zipCode}, ${user.address.city}, ${user.address.country}`,
+      containsText: {
+        text: `{volunteerBirthCity}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.phone,
+      containsText: {
+        text: `{volunteerPhone}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.ICNumber,
+      containsText: {
+        text: `{volunteerICNumber}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: user.ICExpirationDate,
+      containsText: {
+        text: `{volunteerICExpirationDate}`,
+        matchCase: true
+      }
+    }
+  },
+  {
+    replaceAllText: {
+      replaceText: `${user.emergencyContact.name} ${user.emergencyContact.surname}`,
+      containsText: {
+        text: `{volunteerEmergencyContact}`,
+        matchCase: true
+      }
+    }
+  },
+]
+}
+
 
 router.post("/uploads/:folderId", async (req, res) => {
   try {
@@ -219,8 +668,8 @@ router.post("/copyModel", async (req, res) => {
 //Replace words req.body.documentId : id du doc;
 router.post("/replaceWords", (req, res) => {
   try {
-    const docs = google.docs({ version: "v1", auth }); 
-    const documentId = req.body.documentId;a
+    const docs = google.docs({ version: "v1", auth });
+    const documentId = req.body.documentId; a
     docs.documents.batchUpdate({
       auth,
       documentId: documentId,
@@ -243,100 +692,143 @@ router.post("/replaceWords", (req, res) => {
 
 //Create documents in volunteer folder
 router.post('/createFiles', async (req, res) => {
-  const documents = []
   // const documentsId = []
-  const user = {
-    passportImg: "",
-    connectionCode: "",
-    token: "",
-    userId: "",
-    mission: {
-      projectName: ''
-    },
-    missionType: 'envoie',
-    name: "tagawa",
-    surname: "benjamin",
-    gender: "",
-    password: "",
-    email: "",
-    passportImg: "",
-    folderIds: {
-      mainFolderId: "",
-      completeFolderId: "",
-      toSignFolderId: "",
-      toValidateFolderId: "1ySHfjBTb0S_51t-uoK_XaGyCCjmhTelz",
-    },
-    photo: "",
-    birthDate: "",
-    birthCity: "",
-    phone: "",
-    degrees: "",
-    occupation: "",
-    RIBImg: "",
-    IBAN: "",
-    CESNumber: "",
-    ICNumber: "",
-    ICExpirationDate: "",
-    address: {
-      street: "",
-      zipCode: "",
-      city: "",
-      country: "",
-    },
-    emergencyContact: {
-      name: "",
-      surname: "",
-      relation: "",
-      phone: "",
-    }
-  }
-
-  if (user.missionType === 'envoie') {
-    documents.push({
-      documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-      documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-    },
-    {
-      documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
-      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-    }) 
-  } else if (user.missionType === 'accueil') {
-            documents.push({
-              documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-              documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-              },
-              {
-              documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
-              documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-            })
-          }
-
-  const documentsId = documents.map(async (doc) => {
-    try {
-      const drive = google.drive({ version: "v3", auth });
+  
+  // if (user.missionType === 'envoie') {
+    //   documents.push({
+      //     documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+      //     documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+      //   },
+      //     {
+        //       documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
+        //       documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+        //     })
+        // } else if (user.missionType === 'accueil') {
+          //   documents.push({
+            //     documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+            //     documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+            //   },
+            //     {
+              //       documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
+              //       documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+              //     })
+              // }
+              const documents = [{
+                    documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+                    documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+                  },
+                    {
+                      documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
+                      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+                    }]
+              let documentsId = []
+              const drive = google.drive({ version: "v3", auth });
+              // try {
+  documentsId = await Promise.all(
+    documents.map(async (doc) => {
       const copy = await drive.files.copy(
         {
           fileId: doc.documentId,
           requestBody: {
             name: doc.documentName,
             mimeType: "application/msword",
-            parents: [user.folderIds.toValidateFolderId], 
+            parents: [user.folderIds.toValidateFolderId],
           }
         },
-        async (err, response) => {
-          if (err) return console.log("The API returned an error: " + err);
-          // return await response.data.id;
-          await response.data
-          console.log(response.data);
-        }
-      );
-    } catch (err) {
-      const message = "An error has occured, please retry later.";
-      res.json({ result: false, message, severity: "error", data: err });
-      throw err;
-    }
-  })
-  console.log(documentsId);
+        function (err, response) {
+          if (err) {
+            console.log("The API returned an error: " + err);
+            res.send('error');
+            return;
+          }
+          console.log(response.data.id)
+          documentsId.push(response.data.id)
+        console.log(documentsId)
+      }
+      )
+     copy.execute(function(resp) {
+      console.log(resp.id)
+     })   
+       })
+       )
+      // } 
+      //  catch (err) {
+    //       const message = "An error has occured, please retry later.";
+    //       res.json({ result: false, message, severity: "error", data: err });
+    //       throw err;
+    // }
+  // console.log(documentsId)
 })
 
+router.post('/create', async (req, res) => {
+  
+  const drive = google.drive({ version: "v3", auth });
+  const docs = google.docs({ version: "v1", auth });
+  const user = req.body.user
+  const request = requestBody(user)
+=pùm:olnhbgvfd cx  const documents = []
+
+  if (user.mission.missionType.includes('envoie')) 
+  {
+      documents.push(
+                      {
+                        documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+                        documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+                      },
+                      {
+                        documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
+                        documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+                      }
+                    )
+  } else if (user.mission.missionType.includes('accueil')) 
+  {
+    documents.push(
+                    {
+                      documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
+                      documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+                    },
+                    {
+                      documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
+                      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+                    }
+                  )
+  }
+
+
+    async function createCopy(documentId, documentName) 
+      {
+        drive.files.copy(
+                            {
+                              fileId: documentId,
+                              requestBody: {
+                                name: documentName,
+                                mimeType: "application/msword",
+                                parents: [user.folderIds.toValidateFolderId],
+                              }
+                            }
+                        )
+                        .then(
+                              function(response) 
+                                {
+                                  console.log(response.data.id);
+                                  docs.documents.batchUpdate(
+                                    {
+                                      auth,
+                                      documentId: response.data.id,
+                                      requestBody:{
+                                                    requests: request
+                                                  }
+                                    }
+                                  )
+                                },
+                              function(error) 
+                                {
+                                  console.log(error)
+                                }
+                             )
+      }
+
+  documents.forEach((doc) => createCopy(doc.documentId, doc.documentName))
+
+})
 module.exports = router;

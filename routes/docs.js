@@ -692,10 +692,12 @@ router.post("/replaceWords", (req, res) => {
 
 //Copy and pre-fill documents in volunteer folder
 router.post('/createFiles', async (req, res) => {
+
+  console.log(req.body)
   
   const drive = google.drive({ version: "v3", auth });
   const docs = google.docs({ version: "v1", auth });
-  const user = req.body.user
+  const user = req.body
   const request = requestBody(user)
   const documents = []
 

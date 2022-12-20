@@ -255,10 +255,8 @@ router.post("/signup", async (req, res) => {
         path: 'hostStructure',
         path: 'coordinationStructure',
         path: 'supportStructure',
-
       }
     })
-    console.log(user)
     const token = jwt.sign({ userId: user._id }, privateKey, { expiresIn: "24h" });
     const message = "User connected successfully !";
     res.json({

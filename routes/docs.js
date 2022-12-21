@@ -7,104 +7,6 @@ const uniqid = require('uniqid');
 const { response } = require("express");
 const { request } = require("http");
 
-const user = {
-  passportImg: "",
-  connectionCode: "",
-  token: "",
-  userId: "",
-  mission: {
-    missionType: 'envoie court terme',
-    projectName: 'A6-Envoi',
-    hostStructure: { 
-      name: 'La Rabia',
-      OIDNumber: 'OIDNumber',
-      qualityLabelHostNumber: 'QualityLabelHostNumber',
-      // siret: String,
-      address: {
-        street: '31 rue saint Bazile',
-        zipCode: '13016',
-        city: 'Paris',
-        country: 'Belgique'
-      },
-      projectReferant: {
-        name: 'Léo',
-        surname: 'Ferte',
-        email: 'lej@ghb.com',
-        phone: 'no phone'
-    },
-      legalReferant: 'contactSchema', 
-    },
-    coordinationStructure: '{ type: mongoose.Schema.Types.ObjectId, ref: }',
-    supportStructure: { 
-      name: 'Now Coworking',
-      OIDNumber: 'OIDNow',
-      qualityLabelHostNumber: 'QualityLabelHostNow',
-      // siret: String,
-      address: {
-        street: '31 rue Sainte',
-        zipCode: '13015',
-        city: 'Verone',
-        country: 'Italie'
-      },
-      projectReferent: {
-        name: 'Youss',
-        surname: 'NoCode',
-        email: 'Nocode@ghb.com',
-        phone: 'yes phone'
-    },
-      legalReferent: 'contactSchema', 
-    },
-    startDate: '11/02/203',
-    endDate: '11/04/2023',
-    subventionNumber: 'String',
-    missionTask: 'String',
-    financialInformations: '',
-    projectReferant: '{ type: mongoose.Schema.Types.ObjectId',
-    missionReferant: {
-      name: 'Tom',
-      surname: 'YesCode',
-      email: 'Yescode@ghb.com',
-      phone: 'Total phone'
-  },
-    practicalInformation: '',
-  },
-  missionType: 'envoie',
-  name: "tagawa",
-  surname: "benjamin",
-  gender: "non-binary",
-  password: "",
-  email: "bentag@gmail.com",
-  passportImg: "",
-  folderIds: {
-    mainFolderId: "",
-    completeFolderId: "",
-    toSignFolderId: "",
-    toValidateFolderId: "1ySHfjBTb0S_51t-uoK_XaGyCCjmhTelz",
-  },
-  photo: "",
-  birthDate: "11/06/1987",
-  birthCity: "Massilia",
-  phone: "+33650707865",
-  degrees: "Master 3",
-  occupation: "Drugs dealer",
-  RIBImg: "",
-  IBAN: "",
-  CESNumber: "1E230986",
-  ICNumber: "123467",
-  ICExpirationDate: "12/07/2034",
-  address: {
-    street: "33 rue du vieux Port",
-    zipCode: "13001",
-    city: "Marseille",
-    country: "France",
-  },
-  emergencyContact: {
-    name: "de la vega",
-    surname: "julianos",
-    relation: "boss",
-    phone: "no phone",
-  }
-}
 
 const requestBody = (user) => {
 return [
@@ -245,7 +147,7 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
       containsText: {
         text: `{hostStructureNumber}`,
         matchCase: true
@@ -263,7 +165,7 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferant.email}`,
+      replaceText: `${user.mission.hostStructure.projectReferent.email}`,
       containsText: {
         text: `{hostStructureEmail}`,
         matchCase: true
@@ -272,7 +174,7 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
       containsText: {
         text: `{hostStructurePhone}`,
         matchCase: true
@@ -344,7 +246,7 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferant.phone}`,
+      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
       containsText: {
         text: `{hoststructureNumber}`,
         matchCase: true
@@ -353,7 +255,7 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferant.email}`,
+      replaceText: `${user.mission.hostStructure.projectReferent.email}`,
       containsText: {
         text: `{hoststructureEmail}`,
         matchCase: true

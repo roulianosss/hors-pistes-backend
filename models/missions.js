@@ -30,8 +30,8 @@ const missionSchema = mongoose.Schema({
     subventionNumber: String,
     missionTask: String,
     financialInformations: financialInformationsSchema,
-    projectReferant: { type: mongoose.Schema.Types.ObjectId, ref: 'referants' },
-    missionReferant: contactSchema,
+    projectReferent: { type: mongoose.Schema.Types.ObjectId, ref: 'referents' },
+    missionReferent: contactSchema,
     practicalInformation: String,
 });
 

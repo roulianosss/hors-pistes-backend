@@ -196,7 +196,7 @@ router.post("/signin", async (req, res) => {
       .populate({
         path: "mission",
         populate: {
-          path: "projectReferant"
+          path: "projectReferent"
         }
       })
       .populate({
@@ -295,7 +295,7 @@ router.post("/signup", async (req, res) => {
     .populate({
       path: "mission",
       populate: {
-        path: "projectReferant"
+        path: "projectReferent"
       }
     })
     .populate({

@@ -273,18 +273,18 @@ return [
   },
   {
     replaceAllText: {
-      replaceText: user.mission.missionReferant.name,
+      replaceText: user.mission.missionReferent.name,
       containsText: {
-        text: `{missionReferantName}`,
+        text: `{missionReferentName}`,
         matchCase: true
       }
     }
   },
   {
     replaceAllText: {
-      replaceText: user.mission.missionReferant.surname,
+      replaceText: user.mission.missionReferent.surname,
       containsText: {
-        text: `{missionReferantSurname}`,
+        text: `{missionReferentSurname}`,
         matchCase: true
       }
     }
@@ -664,6 +664,7 @@ router.post('/createFiles', async (req, res) => {
       }
 
   documents.forEach((doc) => createCopy(doc.documentId, doc.documentName))
+  res.json({result: true})
 
 })
 module.exports = router;

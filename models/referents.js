@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const referantSchema = mongoose.Schema({
+const referentSchema = mongoose.Schema({
     name: String,
     surname: String,
     password: String,
@@ -8,6 +8,6 @@ const referantSchema = mongoose.Schema({
     phoneNumber: String,
 })
 
-const Referant = mongoose.model("referants", referantSchema);
+const Referent = mongoose.model("referents", referentSchema);
 
-module.exports = Referant;
+module.exports = Referent;

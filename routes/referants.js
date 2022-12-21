@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const Referant = require("../models/referants");
+const Referent = require("../models/referents");
 
-// Fetch all Referants
+// Fetch all Referents
 router.get("/", async (req, res, next) => {
   try {
-    const allReferants = await Referant.find();
+    const allReferents = await Referent.find();
     res.json({
       result: true,
       severity: "success",
-      message: "All referants have been retieved !",
-      data: allReferants
+      message: "All referents have been retieved !",
+      data: allReferents
     });
   } catch (err) {
     const message = "An error has occured, please retry later.";

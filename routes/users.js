@@ -158,6 +158,7 @@ router.post("/firstConnection", async (req, res) => {
     const { email, connectionCode } = req.body;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (user && connectionCode === user.connectionCode) {
+      console.log('ok')
       const token = jwt.sign({ userId: user._id }, privateKey, {
         expiresIn: "24h"
       });

@@ -10,10 +10,10 @@ router.get("/", auth, async (req, res) => {
   try {
     const allMissions = await Mission.find()
       .populate("hostStructure")
-      .populate("missionReferant")
+      .populate("missionReferent")
       .populate("supportStructure")
       .populate("coordinationStructure")
-      .populate("projectReferant")
+      .populate("projectReferent")
       .populate("volunteer");
     res.json({
       result: true,
@@ -33,10 +33,10 @@ router.get("/:missionId", auth, async (req, res) => {
   try {
     const mission = await Mission.findById(req.params.missionId)
       .populate("hostStructure")
-      .populate("missionReferant")
+      .populate("missionReferent")
       .populate("supportStructure")
       .populate("coordinationStructure")
-      .populate("projectReferant")
+      .populate("projectReferent")
       .populate("volunteer");
     res.json({
       result: true,
@@ -56,10 +56,10 @@ router.get("/:missionId/:userId", async (req, res) => {
   try {
     const mission = await Mission.findOne({ volunteer: req.params.userId })
       .populate("hostStructure")
-      .populate("missionReferant")
+      .populate("missionReferent")
       .populate("supportStructure")
       .populate("coordinationStructure")
-      .populate("projectReferant")
+      .populate("projectReferent")
       .populate("volunteer");
     res.json({
       result: true,

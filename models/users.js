@@ -30,7 +30,7 @@ const userSchema = mongoose.Schema({
   password: String,
   photo: String,
   passportImg: String,
-  birthDate: Date,
+  birthDate: String,
   birthCity: String,
   phone: String,
   degrees: String,

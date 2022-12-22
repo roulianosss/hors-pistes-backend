@@ -8,7 +8,7 @@ const fs = require("fs");
 
 //Route pour intégrer la signature sur un google docs
 router.post("/", async (req, res) => {
-  
+    console.log(req)
     let imageID;
     const photoPath = `./tmp/${uniqid()}.png`;
     const resultMove = await req.files.photoFromFront.mv(photoPath);

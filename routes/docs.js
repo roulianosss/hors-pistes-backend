@@ -603,7 +603,7 @@ router.post('/createFiles', async (req, res) => {
   const request = requestBody(user)
   const documents = []
 
-  if (user.mission.missionType.includes('envoie')) 
+  if (user.mission.missionType.includes('envoi')) 
   {
       documents.push(
                       {

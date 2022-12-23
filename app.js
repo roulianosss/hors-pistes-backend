@@ -10,7 +10,7 @@ const docsRouter = require('./routes/docs');
 const usersRouter = require('./routes/users');
 const missionsRouter = require('./routes/missions');
 const structuresRouter = require('./routes/structures');
-const referantsRouter = require('./routes/referants');
+const referentsRouter = require('./routes/referents');
 const adminsRouter = require('./routes/admins');
 const signatureRouter = require('./routes/signature')
 require('./models/connection')
@@ -35,7 +35,7 @@ app.use('/users', usersRouter);
 app.use('/docs', docsRouter);
 app.use('/missions', missionsRouter);
 app.use('/structures', structuresRouter);
-app.use('/referants', referantsRouter);
+app.use('/referents', referentsRouter);
 app.use('/admins', adminsRouter);
 app.use('/signature', signatureRouter)
 

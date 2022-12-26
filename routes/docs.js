@@ -7,8 +7,8 @@ const { requestBody } = require("../modules/requestBody");
 const authJwt = require("../auth/auth");
 
 //UPLOAD FILES
-router.post("/uploads/:folderId", async (req, res) => {
-  console.log(req.files.document.name)
+router.post("/uploads/:folderId", authJwt, async (req, res) => {
+  console.log(req.files.document.name);
   try {
     const path = `./tmp/${req.files.document.name}`;
     await req.files.document.mv(path);
@@ -37,7 +37,8 @@ router.post("/uploads/:folderId", async (req, res) => {
   }
 });
 
-router.post("/createFolders", async (req, res) => {
+// Créer les dossiers nécessaires sur le drive
+router.post("/createFolders", authJwt,  async (req, res) => {
   try {
     const finalFolders = ["A Valider", "A Signer", "Complet"];
     const connectionString = req.body.connectionString.split("/");
@@ -51,11 +52,9 @@ router.post("/createFolders", async (req, res) => {
     const mainFolder = "1rJ4JcXQqHBOMJzEwIVw2tFoXFWLGiqCa";
     let activeFolder;
     const drive = google.drive({ version: "v3", auth });
-
     const response = await drive.files.list({
       q: `name='${connectionString[0]}' and parents='${mainFolder}'`
     });
-
     if (response.data.files.length) {
       activeFolder = response.data.files[0].id;
     } else {
@@ -64,14 +63,12 @@ router.post("/createFolders", async (req, res) => {
         mimeType: "application/vnd.google-apps.folder",
         parents: [mainFolder]
       };
-
       const file = await drive.files.create({
         resource: fileMetadata,
         fields: "id"
       });
       activeFolder = file.data.id;
     }
-
     const response2 = await drive.files.list({
       q: `name='${connectionString[1]}' and parents='${activeFolder}'`
     });
@@ -83,14 +80,12 @@ router.post("/createFolders", async (req, res) => {
         mimeType: "application/vnd.google-apps.folder",
         parents: [activeFolder]
       };
-
       const file2 = await drive.files.create({
         resource: fileMetadata,
         fields: "id"
       });
       activeFolder = file2.data.id;
     }
-
     const response3 = await drive.files.list({
       q: `name='${connectionString[2]}' and parents='${activeFolder}'`
     });
@@ -102,21 +97,18 @@ router.post("/createFolders", async (req, res) => {
         mimeType: "application/vnd.google-apps.folder",
         parents: [activeFolder]
       };
-
       const file3 = await drive.files.create({
         resource: fileMetadata,
         fields: "id"
       });
       activeFolder = file3.data.id;
     }
-
     const folderIds = await Promise.all(
       finalFolders.map(async (folder) => {
         const response = await drive.files.list({
           q: `name='${folder}' and parents='${activeFolder}'`
         });
         if (response.data.files.length) {
-          console.log(response.data.files);
           return response.data.files[0].id;
         } else {
           const fileMetadata = {
@@ -133,7 +125,6 @@ router.post("/createFolders", async (req, res) => {
         }
       })
     );
-
     res.json({
       result: true,
       severity: "success",
@@ -246,38 +237,36 @@ router.post("/replaceWords", authJwt, (req, res) => {
 });
 
 //Copy and pre-fill documents in volunteer folder
-router.post("/createFiles", async (req, res) => {
+router.post("/createFiles", authJwt, async (req, res) => {
+  const drive = google.drive({ version: "v3", auth });
+  const docs = google.docs({ version: "v1", auth });
+  const user = req.body;
+  const request = requestBody(user);
+  const documents = [];
 
-    const drive = google.drive({ version: "v3", auth });
-    const docs = google.docs({ version: "v1", auth });
-    const user = req.body;
-    const request = requestBody(user);
-    const documents = [];
-
-    if (user.mission.missionType.includes("envoi")) {
-      documents.push(
-        {
-          documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
-          documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-        },
-        {
-          documentId: "1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo",
-          documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-        }
-      );
-    } else if (user.mission.missionType.includes("accueil")) {
-      documents.push(
-        {
-          documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
-          documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-        },
-        {
-          documentId: "1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw",
-          documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-        }
-      );
-    }
-
+  if (user.mission.missionType.includes("envoi")) {
+    documents.push(
+      {
+        documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
+        documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+      },
+      {
+        documentId: "1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo",
+        documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+      }
+    );
+  } else if (user.mission.missionType.includes("accueil")) {
+    documents.push(
+      {
+        documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
+        documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+      },
+      {
+        documentId: "1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw",
+        documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+      }
+    );
+  }
   async function createCopy(documentId, documentName) {
     drive.files
       .copy({

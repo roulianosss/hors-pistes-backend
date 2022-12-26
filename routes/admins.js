@@ -118,7 +118,7 @@ router.post("/update", auth, async (req, res) => {
   }
 });
 
-// SignIn a user
+// SignIn a admin
 router.post("/signin", async (req, res) => {
   try {
     if (!checkBody(req.body, ["email", "password"])) {
@@ -191,7 +191,7 @@ router.post("/signup", async (req, res) => {
       res.json({
         result: false,
         severity: "error",
-        error: "User already exists"
+        error: "Admin already exists"
       });
     }
   } catch (err) {

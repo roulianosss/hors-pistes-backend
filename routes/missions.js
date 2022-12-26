@@ -52,7 +52,7 @@ router.get("/:missionId", auth, async (req, res) => {
 });
 
 // fetch mission by user
-router.get("/:missionId/:userId", async (req, res) => {
+router.get("/:missionId/:userId", auth, async (req, res) => {
   try {
     const mission = await Mission.findOne({ volunteer: req.params.userId })
       .populate("hostStructure")

@@ -3,370 +3,22 @@ const router = express.Router();
 const { auth } = require("../auth/auth-google.js");
 const { google } = require("googleapis");
 const fs = require("fs");
-const uniqid = require('uniqid');
-const { response } = require("express");
-const { request } = require("http");
+const { requestBody } = require("../modules/requestBody");
+const authJwt = require("../auth/auth");
 
-
-const requestBody = (user) => {
-return [
-  {
-    replaceAllText: {
-      replaceText: user.name,
-      containsText: {
-        text: `{volunteerName}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.surname,
-      containsText: {
-        text: `{volunteerSurname}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.birthDate,
-      containsText: {
-        text: `{volunteerBirthDate}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.birthCity,
-      containsText: {
-        text: `{volunteerNationality}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.email,
-      containsText: {
-        text: `{volunteerEmail}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.address.street}, ${user.address.zipCode} ${user.address.city}, ${user.address.country}`,
-      containsText: {
-        text: `{volunteerAddress}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.startDate,
-      containsText: {
-        text: `{missionStartDate}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.endDate,
-      containsText: {
-        text: `{missionEndDate}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.supportStructure.name,
-      containsText: {
-        text: `{supportStructureName}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.supportStructure.address.city,
-      containsText: {
-        text: `{supportStructureCity}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.supportStructure.address.country,
-      containsText: {
-        text: `{supportStructureCountry}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.supportStructure.qualityLabelHostNumber,
-      containsText: {
-        text: `{supportStructureQualityLabel}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.supportStructure.OIDNumber,
-      containsText: {
-        text: `{supportStructureOIDNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.supportStructure.address.street}, ${user.mission.supportStructure.address.zipCode} ${user.mission.supportStructure.address.city}, ${user.mission.supportStructure.address.country}`,
-      containsText: {
-        text: `{supportStructureAddress}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.supportStructure.projectReferent.phone}`,
-      containsText: {
-        text: `{supportStructureNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
-      containsText: {
-        text: `{hostStructureNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.supportStructure.projectReferent.email}`,
-      containsText: {
-        text: `{supportStructureEmail}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferent.email}`,
-      containsText: {
-        text: `{hostStructureEmail}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
-      containsText: {
-        text: `{hostStructurePhone}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.supportStructure.projectReferent.name} ${user.mission.supportStructure.projectReferent.surname}`,
-      containsText: {
-        text: `{supportStructureContact}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.hostStructure.name,
-      containsText: {
-        text: `{hostStructureName}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.hostStructure.address.city,
-      containsText: {
-        text: `{hostStructureCity}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.hostStructure.address.country,
-      containsText: {
-        text: `{hostStructureCountry}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.hostStructure.qualityLabelHostNumber,
-      containsText: {
-        text: `{hostStructureQualityLabel}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.hostStructure.OIDNumber,
-      containsText: {
-        text: `{hostStructureOIDNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.address.street}, ${user.mission.hostStructure.address.zipCode} ${user.mission.hostStructure.address.city}, ${user.mission.hostStructure.address.country}`,
-      containsText: {
-        text: `{hostStructureAddress}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferent.phone}`,
-      containsText: {
-        text: `{hoststructureNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.hostStructure.projectReferent.email}`,
-      containsText: {
-        text: `{hoststructureEmail}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.mission.supportStructure.projectReferent.name} ${user.mission.supportStructure.projectReferent.surname}`,
-      containsText: {
-        text: `{hostStructureContact}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.missionReferent.name,
-      containsText: {
-        text: `{missionReferentName}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.mission.missionReferent.surname,
-      containsText: {
-        text: `{missionReferentSurname}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.CESNumber,
-      containsText: {
-        text: `{volunteerCESNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.birthCity,
-      containsText: {
-        text: `{volunteerBirthCity}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.address.street}, ${user.address.zipCode}, ${user.address.city}, ${user.address.country}`,
-      containsText: {
-        text: `{volunteerBirthCity}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.phone,
-      containsText: {
-        text: `{volunteerPhone}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.ICNumber,
-      containsText: {
-        text: `{volunteerICNumber}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: user.ICExpirationDate,
-      containsText: {
-        text: `{volunteerICExpirationDate}`,
-        matchCase: true
-      }
-    }
-  },
-  {
-    replaceAllText: {
-      replaceText: `${user.emergencyContact.name} ${user.emergencyContact.surname}`,
-      containsText: {
-        text: `{volunteerEmergencyContact}`,
-        matchCase: true
-      }
-    }
-  },
-]
-}
-
-
+//UPLOAD FILES
 router.post("/uploads/:folderId", async (req, res) => {
+  console.log(req.files.document.name)
   try {
-    const path = `./tmp/${req.files.name}`;
-    const resultMove = await req.files.document.mv(path);
+    const path = `./tmp/${req.files.document.name}`;
+    await req.files.document.mv(path);
     const service = google.drive({ version: "v3", auth });
     const fileMetadata = {
-      name: req.files.name,
+      name: req.files.document.name,
       parents: [req.params.folderId]
     };
     const media = {
-      mimeType: req.files.mimetype,
+      mimeType: req.files.document.mimetype,
       body: fs.createReadStream(path)
     };
     const file = await service.files.create({
@@ -464,8 +116,8 @@ router.post("/createFolders", async (req, res) => {
           q: `name='${folder}' and parents='${activeFolder}'`
         });
         if (response.data.files.length) {
-          console.log(response.data.files)
-          return response.data.files[0].id
+          console.log(response.data.files);
+          return response.data.files[0].id;
         } else {
           const fileMetadata = {
             name: `${folder}`,
@@ -481,7 +133,7 @@ router.post("/createFolders", async (req, res) => {
         }
       })
     );
-    
+
     res.json({
       result: true,
       severity: "success",
@@ -501,7 +153,7 @@ router.post("/createFolders", async (req, res) => {
 });
 
 //READ FILE LIST
-router.get("/listFolder/:folderId", async (req, res) => {
+router.get("/listFolder/:folderId", authJwt, async (req, res) => {
   try {
     const service = google.drive({ version: "v3", auth });
     const files = [];
@@ -521,7 +173,7 @@ router.get("/listFolder/:folderId", async (req, res) => {
 });
 
 // CREATE FOLDER WITH req.body.name: 'nom du dossier'; req.body.inFolder: 'nom du dossier parent'
-router.post("/createFolder", async (req, res) => {
+router.post("/createFolder", authJwt, async (req, res) => {
   try {
     const drive = google.drive({ version: "v3", auth });
     const fileMetadata = {
@@ -542,7 +194,7 @@ router.post("/createFolder", async (req, res) => {
 });
 
 // COPY MODEL WITH req.body.documentId: 'id du document a copier' / req.body.name: 'nouveau nom du fichier' / req.body.inFolder: 'dossier parent'
-router.post("/copyModel", async (req, res) => {
+router.post("/copyModel", authJwt, async (req, res) => {
   try {
     const drive = google.drive({ version: "v3", auth });
     drive.files.copy(
@@ -568,10 +220,11 @@ router.post("/copyModel", async (req, res) => {
 });
 
 //Replace words req.body.documentId : id du doc;
-router.post("/replaceWords", (req, res) => {
+router.post("/replaceWords", authJwt, (req, res) => {
   try {
     const docs = google.docs({ version: "v1", auth });
-    const documentId = req.body.documentId; a
+    const documentId = req.body.documentId;
+    a;
     docs.documents.batchUpdate({
       auth,
       documentId: documentId,
@@ -593,78 +246,65 @@ router.post("/replaceWords", (req, res) => {
 });
 
 //Copy and pre-fill documents in volunteer folder
-router.post('/createFiles', async (req, res) => {
+router.post("/createFiles", async (req, res) => {
 
-  console.log(req.body)
-  
-  const drive = google.drive({ version: "v3", auth });
-  const docs = google.docs({ version: "v1", auth });
-  const user = req.body
-  const request = requestBody(user)
-  const documents = []
+    const drive = google.drive({ version: "v3", auth });
+    const docs = google.docs({ version: "v1", auth });
+    const user = req.body;
+    const request = requestBody(user);
+    const documents = [];
 
-  if (user.mission.missionType.includes('envoi')) 
-  {
+    if (user.mission.missionType.includes("envoi")) {
       documents.push(
-                      {
-                        documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-                        documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-                      },
-                      {
-                        documentId: '1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo',
-                        documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-                      }
-                    )
-  } else if (user.mission.missionType.includes('accueil')) 
-  {
-    documents.push(
-                    {
-                      documentId: '1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE',
-                      documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
-                    },
-                    {
-                      documentId: '1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw',
-                      documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
-                    }
-                  )
+        {
+          documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
+          documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+        },
+        {
+          documentId: "1I5IJ_mKIqr6easzLrcexTRzYAsYFs9TOlvBhdLqSYlo",
+          documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+        }
+      );
+    } else if (user.mission.missionType.includes("accueil")) {
+      documents.push(
+        {
+          documentId: "1hhCS-kkJvS6Ihpugq9eBoumNDll2PXOaVUfSr5RtgGE",
+          documentName: `${user.name}_${user.surname}_Volunteer_Certificate`
+        },
+        {
+          documentId: "1Tx5uckq8zEcL35PN7AGPRw0e7uWZM7zLcsdMwqDn9Kw",
+          documentName: `${user.name}_${user.surname}_Volunteering_Agreement`
+        }
+      );
+    }
+
+  async function createCopy(documentId, documentName) {
+    drive.files
+      .copy({
+        fileId: documentId,
+        requestBody: {
+          name: documentName,
+          mimeType: "application/msword",
+          parents: [user.folderIds.toValidateFolderId]
+        }
+      })
+      .then(
+        function (response) {
+          console.log(response.data.id);
+          docs.documents.batchUpdate({
+            auth,
+            documentId: response.data.id,
+            requestBody: {
+              requests: request
+            }
+          });
+        },
+        function (error) {
+          console.log(error);
+        }
+      );
   }
-
-
-    async function createCopy(documentId, documentName) 
-      {
-        drive.files.copy(
-                            {
-                              fileId: documentId,
-                              requestBody: {
-                                name: documentName,
-                                mimeType: "application/msword",
-                                parents: [user.folderIds.toValidateFolderId],
-                              }
-                            }
-                        )
-                        .then(
-                              function(response) 
-                                {
-                                  console.log(response.data.id);
-                                  docs.documents.batchUpdate(
-                                    {
-                                      auth,
-                                      documentId: response.data.id,
-                                      requestBody:{
-                                                    requests: request
-                                                  }
-                                    }
-                                  )
-                                },
-                              function(error) 
-                                {
-                                  console.log(error)
-                                }
-                             )
-      }
-
-  documents.forEach((doc) => createCopy(doc.documentId, doc.documentName))
-  res.json({result: true})
-
-})
+  documents.forEach((doc) => createCopy(doc.documentId, doc.documentName));
+  res.json({ result: true });
+});
 module.exports = router;

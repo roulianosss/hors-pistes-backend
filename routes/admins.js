@@ -1,15 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Admin = require("../models/admins");
-const Mission = require("../models/missions");
 const bcrypt = require("bcrypt");
 const { checkBody } = require("../modules/checkBody");
 const jwt = require("jsonwebtoken");
 const privateKey = require("../auth/private_key");
-const auth = require("../auth/auth");
+const auth = require('../auth/auth')
 
-// fetch all users
-router.get("/", async (req, res) => {
+// fetch all admins
+router.get("/", auth,  async (req, res) => {
   try {
     const allAdmins = await Admin.find();
     res.json(allAdmins);
@@ -20,8 +19,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-// fetch un utilisateur precis
-router.get("/:adminId", async (req, res) => {
+// fetch un admin precis
+router.get("/:adminId", auth, async (req, res) => {
   try {
     const admin = await Admin.findById(req.params.adminId);
     res.json(admin);
@@ -32,36 +31,37 @@ router.get("/:adminId", async (req, res) => {
   } 
 });
 
-// delete an user
-router.delete("/:adminId/", async (req, res) => {
-  try {
-    const admin = await Admin.findOneAndDelete({ _id: req.params.adminId });
-    res.json({
-      result: true,
-      severity: "success",
-      message: "User has been deleted successfully !",
-      userInfo: admin
-    });
-  } catch (err) {
-    const message = "An error has occured, please retry later.";
-    res.json({ result: false, message, severity: "error", data: err });
-    throw err;
-  }
-});
+// delete an admin COMMENTé POUR LA SECURITé
+// router.delete("/:adminId/", auth, async (req, res) => {
+//   try {
+//     const admin = await Admin.findOneAndDelete({ _id: req.params.adminId });
+//     res.json({
+//       result: true,
+//       severity: "success",
+//       message: "User has been deleted successfully !",
+//       userInfo: admin
+//     });
+//   } catch (err) {
+//     const message = "An error has occured, please retry later.";
+//     res.json({ result: false, message, severity: "error", data: err });
+//     throw err;
+//   }
+// });
 
-// fetch une supression de tout les utilisateurs
-router.delete("/allAdmins", async (req, res) => {
-  try {
-    const deleteAllAdmins = await User.deleteMany({});
-    res.json(deleteAllAdmins);
-  } catch (err) {
-    const message = "An error has occured, please retry later.";
-    res.json({ result: false, message, severity: "error", data: err });
-    throw err;
-  }
-});
+// fetch une supression de tout les admins COMMENTé POUR LA SECURITé
+// router.delete("/allAdmins", auth, async (req, res) => {
+//   try {
+//     const deleteAllAdmins = await User.deleteMany({});
+//     res.json(deleteAllAdmins);
+//   } catch (err) {
+//     const message = "An error has occured, please retry later.";
+//     res.json({ result: false, message, severity: "error", data: err });
+//     throw err;
+//   }
+// });
 
-router.post("/create", async (req, res) => {
+//Creer compte avec administration
+router.post("/create", auth, async (req, res) => {
   try {
     if (!checkBody(req.body, ["email", "password"])) {
       res.json({
@@ -93,7 +93,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Fetch un Update Utilisateur
-router.post("/update", async (req, res) => {
+router.post("/update", auth, async (req, res) => {
   try {
     if (!checkBody(req.body, ["email", "password"])) {
       res.json({

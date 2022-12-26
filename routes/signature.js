@@ -5,9 +5,10 @@ const { google } = require("googleapis");
 const uniqid = require("uniqid");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const authJwt = require('../auth/auth')
 
 //Route pour intégrer la signature sur un google docs
-router.post("/", async (req, res) => {
+router.post("/", authJwt, async (req, res) => {
     let imageID;
     const photoPath = `./tmp/${uniqid()}.png`;
     const resultMove = await req.files.photoFromFront.mv(photoPath);

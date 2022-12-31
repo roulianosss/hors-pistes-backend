@@ -48,7 +48,7 @@ router.delete("/:structureId", auth, async (req, res) => {
       result: true,
       severity: "success",
       message: "Structure has been deleted successfully !",
-      userInfo: structure
+      structureInfo: structure
     });
   } catch (err) {
     const message = "An error has occured, please retry later.";

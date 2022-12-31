@@ -42,7 +42,7 @@ router.get("/:missionId", auth, async (req, res) => {
       result: true,
       data: mission,
       severity: "success",
-      message: "All users have been retrieved !"
+      message: "Mission have been retrieved !"
     });
   } catch (err) {
     const message = "An error has occured, please retry later.";

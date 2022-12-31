@@ -5,10 +5,10 @@ const bcrypt = require("bcrypt");
 const { checkBody } = require("../modules/checkBody");
 const jwt = require("jsonwebtoken");
 const privateKey = require("../auth/private_key");
-const auth = require('../auth/auth')
+const auth = require("../auth/auth");
 
 // fetch all admins
-router.get("/", auth,  async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     const allAdmins = await Admin.find();
     res.json(allAdmins);
@@ -28,7 +28,7 @@ router.get("/:adminId", auth, async (req, res) => {
     const message = "An error has occured, please retry later.";
     res.json({ result: false, message, severity: "error", data: err });
     throw err;
-  } 
+  }
 });
 
 // delete an admin COMMENTé POUR LA SECURITé
@@ -92,7 +92,7 @@ router.post("/create", auth, async (req, res) => {
   }
 });
 
-// Fetch un Update Utilisateur
+// Fetch un Update Admin
 router.post("/update", auth, async (req, res) => {
   try {
     if (!checkBody(req.body, ["email", "password"])) {
@@ -156,7 +156,7 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-// SignUp a user
+// SignUp a admin
 router.post("/signup", async (req, res) => {
   try {
     if (!checkBody(req.body, ["email", "password"])) {

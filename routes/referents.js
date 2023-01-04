@@ -4,7 +4,7 @@ const Referent = require("../models/referents");
 const auth = require('../auth/auth')
 
 // Fetch all Referents
-router.get("/", auth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const allReferents = await Referent.find();
     res.json({

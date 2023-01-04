@@ -6,7 +6,7 @@ const { checkBody } = require("../modules/checkBody");
 const auth = require("../auth/auth");
 
 // Fetch all Missions
-router.get("/", auth, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const allMissions = await Mission.find()
       .populate("hostStructure")

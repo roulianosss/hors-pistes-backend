@@ -10,7 +10,7 @@ const authJwt = require("../auth/auth");
 //Route pour intégrer la signature sur un google docs
 router.post("/", authJwt, async (req, res) => {
   let imageID;
-  const photoPath = `./tmp/${uniqid()}.png`;
+  const photoPath = `/tmp/${uniqid()}.png`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
 
   const resultCloudinary = await cloudinary.uploader.upload(photoPath);

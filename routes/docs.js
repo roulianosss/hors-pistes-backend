@@ -10,7 +10,7 @@ const authJwt = require("../auth/auth");
 router.post("/uploads/:folderId", authJwt, async (req, res) => {
   console.log(req.files.document.name);
   try {
-    const path = `./tmp/${req.files.document.name}`;
+    const path = `/tmp/${req.files.document.name}`;
     await req.files.document.mv(path);
     const service = google.drive({ version: "v3", auth });
     const fileMetadata = {

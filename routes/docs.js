@@ -38,7 +38,7 @@ router.post("/uploads/:folderId", authJwt, async (req, res) => {
 });
 
 // Créer les dossiers nécessaires sur le drive
-router.post("/createFolders", authJwt,  async (req, res) => {
+router.post("/createFolders", authJwt, async (req, res) => {
   try {
     const finalFolders = ["A Valider", "A Signer", "Complet"];
     const connectionString = req.body.connectionString.split("/");
@@ -267,7 +267,7 @@ router.post("/createFiles", authJwt, async (req, res) => {
       }
     );
   }
-  async function createCopy(documentId, documentName) {
+  function createCopy(documentId, documentName) {
     drive.files
       .copy({
         fileId: documentId,
@@ -278,7 +278,7 @@ router.post("/createFiles", authJwt, async (req, res) => {
         }
       })
       .then(
-        function (response) {
+        (response) => {
           console.log(response.data.id);
           docs.documents.batchUpdate({
             auth,
